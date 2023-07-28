@@ -15,12 +15,37 @@ app.use(session({
   saveUninitialized: true,
 }));
 
+//store user details in users[]
 let users = [];
 if (fs.existsSync('users.json')) {
-  const usersData = fs.readFileSync('users.json');
-  users = JSON.parse(usersData);
+    userDetails(function (err, data) {
+        if (err) {
+            res.status(200).send("error")
+            return;
+        }
+        users = data;
+})}
+
+function userDetails(callback) {
+    fs.readFile("./users.json", "utf-8", function (err, data) {
+        if (err) {
+            callback(err);
+            return;
+        }
+        if (data.length === 0) {
+            data = "[]";
+        }
+        try {
+            data = JSON.parse(data);
+            callback(null, data);
+        } catch (err) {
+            callback(err);
+        }
+    });
 }
 
+
+//endpoints
 app.get("/", function(req, res){
     if(!req.session.isLoggedIn){
         res.redirect("/login");
@@ -71,7 +96,8 @@ app.get('/logout', (req, res) => {
 
 app.get('/login-error', (req, res)=>{
     res.send("error");
-})
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
