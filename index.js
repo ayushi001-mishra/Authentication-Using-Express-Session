@@ -69,7 +69,9 @@ app.get('/logout', (req, res) => {
   res.redirect('/login');
 });
 
-
+app.get('/login-error', (req, res)=>{
+    res.send("error");
+})
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
